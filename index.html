@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>商详版本日历</title>
+<style id="css">
+:root{
+  --bg:#F3F4F7; --surface:#FFFFFF; --ink:#18202C; --muted:#5C6575; --faint:#8C93A1;
+  --line:#E1E4EA; --soft:#ECEEF3; --focus:#0F766E;
+  --hol:#FCE9E8; --hol-ink:#B42318; --mk:#FFF3D6; --mk-ink:#835400;
+  --warn-bg:#FFF5E3; --warn-line:#F2D29B; --warn-ink:#7A4B00;
+  --ok-bg:#E4F4EE; --ok-ink:#11643F;
+  --sel:#E6F2F1;
+  --c0:#586A90; --c1:#0E8587; --c2:#4B5BD6; --c3:#B8720A; --c4:#C23D6A; --c5:#3C8530; --c6:#8B4FC4; --c7:#7A8494;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141B; --surface:#181F29; --ink:#E6E9EF; --muted:#A3ABB9; --faint:#7C8595;
+    --line:#2A3240; --soft:#202835; --focus:#4FD1C5;
+    --hol:#3A1E1E; --hol-ink:#F4A3A0; --mk:#382D12; --mk-ink:#F0C66A;
+    --warn-bg:#2F2512; --warn-line:#5C4618; --warn-ink:#F0C66A;
+    --ok-bg:#15302A; --ok-ink:#7FDDB5;
+    --sel:#16302F;
+    --c0:#8FA0C4; --c1:#3FC3C5; --c2:#8C98F2; --c3:#EBA63C; --c4:#EE7CA2; --c5:#78C663; --c6:#BC8FEA; --c7:#9AA3B2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141B; --surface:#181F29; --ink:#E6E9EF; --muted:#A3ABB9; --faint:#7C8595;
+  --line:#2A3240; --soft:#202835; --focus:#4FD1C5;
+  --hol:#3A1E1E; --hol-ink:#F4A3A0; --mk:#382D12; --mk-ink:#F0C66A;
+  --warn-bg:#2F2512; --warn-line:#5C4618; --warn-ink:#F0C66A;
+  --ok-bg:#15302A; --ok-ink:#7FDDB5;
+  --sel:#16302F;
+  --c0:#8FA0C4; --c1:#3FC3C5; --c2:#8C98F2; --c3:#EBA63C; --c4:#EE7CA2; --c5:#78C663; --c6:#BC8FEA; --c7:#9AA3B2;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;font-size:14px;line-height:1.6;padding-inline:16px;padding-block:24px 96px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+h1{font-size:26px;line-height:1.25;margin:0;letter-spacing:.01em;text-wrap:balance}
+h2{font-size:17px;margin:0;text-wrap:balance}
+h3{font-size:15px;margin:0}
+.sub{color:var(--muted);margin:4px 0 0}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+button{cursor:pointer}
+button:hover{border-color:var(--faint)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.day:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+button.link{border:0;background:none;color:var(--hol-ink);padding:0 4px}
+textarea{width:100%;min-height:96px;resize:vertical}
+.sec-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.hint{color:var(--faint);font-size:12px}
+
+.dayline{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:14px}
+.dayline .big{font-size:22px;font-weight:700}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;line-height:1.7;white-space:nowrap}
+.tag.hol{background:var(--hol);color:var(--hol-ink)}
+.tag.mk{background:var(--mk);color:var(--mk-ink)}
+.tag.today{background:var(--sel);color:var(--focus)}
+.tag.inf{border:1px dashed var(--faint);color:var(--muted);white-space:normal}
+.tag.sh{background:var(--warn-bg);color:var(--warn-ink);white-space:normal}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.vname{font-weight:700;font-size:20px;color:var(--vc)}
+.wk{color:var(--muted);font-size:13px}
+.stage{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:13px;padding:2px 10px;border-radius:999px;background:var(--soft);background:color-mix(in srgb,var(--vc) 14%,var(--surface))}
+.stage::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--vc)}
+.stage-desc{color:var(--muted);font-size:12.5px;margin-top:-4px}
+.lbl{font-size:11.5px;color:var(--faint);letter-spacing:.08em}
+.todo{display:flex;flex-direction:column;gap:8px}
+.todo-item{border-left:3px solid var(--vc);padding-left:10px}
+.todo-item b{font-weight:500}
+.todo-item p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.none{color:var(--faint);font-size:13px}
+.next{border-top:1px dashed var(--line);padding-top:8px;font-size:13px;color:var(--muted)}
+.next strong{color:var(--ink);font-weight:500}
+
+.week{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:8px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;cursor:pointer;min-height:120px}
+.day.is-sel{border-color:var(--focus);background:var(--sel)}
+.day.is-hol{background:var(--hol)}
+.day-h{display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap}
+.day-h .d{font-weight:700}
+.chip{display:block;font-size:12.5px;line-height:1.45;padding:4px 7px;border-radius:6px;background:var(--soft);background:color-mix(in srgb,var(--vc) 11%,var(--surface));border:1px solid transparent}
+.chip.inf{border-style:dashed;border-color:var(--faint);border-color:color-mix(in srgb,var(--vc) 45%,transparent)}
+.chip.extra{border-color:var(--vc)}
+.chip .v{font-weight:700;color:var(--vc);margin-right:4px}
+.chip .n{display:block;font-size:11px;color:var(--warn-ink)}
+@media (max-width:760px){.week{grid-template-columns:1fr}.day{min-height:0}}
+
+.scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.gantt{min-width:860px;padding:12px 16px 16px}
+.g-in{position:relative}
+.g-row{display:grid;grid-template-columns:56px 1fr;align-items:center;height:34px}
+.g-row .rl{font-weight:700;color:var(--vc)}
+.g-track{position:relative;height:100%}
+.g-seg{position:absolute;top:8px;height:18px;background:var(--vc);background:color-mix(in srgb,var(--vc) var(--mix),var(--surface));border-radius:3px;font-size:10.5px;color:var(--ink);overflow:hidden;white-space:nowrap;padding-left:4px;line-height:18px}
+.g-seg.dark{color:var(--surface)}
+.g-axis{position:relative;height:22px;font-size:11.5px;color:var(--muted)}
+.g-axis span{position:absolute;top:0;padding-left:4px;border-left:1px solid var(--line)}
+.g-band{position:absolute;top:22px;bottom:0;background:var(--hol);opacity:.8}
+.g-line{position:absolute;top:18px;bottom:0;width:2px;background:var(--focus);z-index:2}
+.g-line.selL{background:var(--faint);width:1px}
+.g-line b{position:absolute;top:-2px;left:4px;font-size:10.5px;color:var(--focus);white-space:nowrap;font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;background:var(--c1);background:color-mix(in srgb,var(--c1) var(--mix),var(--surface))}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:500;white-space:nowrap}
+td div+div{margin-top:2px}
+.tbl-scroll{overflow-x:auto}
+.tbl-scroll table.wide{min-width:720px}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px 20px;margin:0}
+.gloss dt{font-weight:700}
+.gloss dd{margin:0 0 6px;color:var(--muted);font-size:13px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink);border-radius:10px;padding:10px 14px;font-size:13px}
+.warn b{font-weight:700}
+.warn button{margin-left:6px}
+ul.plain{margin:6px 0 0;padding-left:18px}
+ul.plain li{margin:2px 0}
+.reqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.req{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface)}
+.req h3{color:var(--vc)}
+.cols2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+
+/* Edit */
+.edit details{border-top:1px solid var(--line);padding-block:10px}
+.edit details:first-of-type{border-top:0}
+.edit summary{cursor:pointer;font-weight:700;list-style-position:outside}
+.edit summary .hint{font-weight:400;margin-left:8px}
+.form{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin-top:10px}
+.form label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted)}
+.form label.grow{flex:1 1 200px}
+.form label.grow input{width:100%}
+.items{margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.items div{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.tpl input,.tpl select{padding:3px 6px;font-size:13px}
+.tpl input.w-lbl{width:100%;min-width:160px}
+.tpl input.w-desc{width:100%;min-width:220px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.08)}
+.bar-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.bar-in .grow{flex:1 1 240px}
+.status{font-size:13px;color:var(--muted)}
+.status.ok{color:var(--ok-ink)}
+.status.err{color:var(--hol-ink)}
+.copybox{flex-basis:100%}
+.copybox textarea{min-height:110px;font-size:12.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+</head><body>
+<div id="root"></div>
+
+<script type="application/json" id="state">{"schema":1,"team":"商详与下单","owner":"芊","anchor":{"version":"6.3","start":"2026-09-07"},"cadenceWeeks":2,"minorMax":9,"holidayRule":"shift","holidays":[{"from":"2026-01-01","to":"2026-01-03","name":"元旦"},{"from":"2026-02-15","to":"2026-02-23","name":"春节"},{"from":"2026-04-04","to":"2026-04-06","name":"清明"},{"from":"2026-05-01","to":"2026-05-05","name":"劳动节"},{"from":"2026-06-19","to":"2026-06-21","name":"端午"},{"from":"2026-09-25","to":"2026-09-27","name":"中秋"},{"from":"2026-10-01","to":"2026-10-07","name":"国庆"}],"makeup":[{"date":"2026-01-04","name":"调休上班"},{"date":"2026-02-14","name":"调休上班"},{"date":"2026-02-28","name":"调休上班"},{"date":"2026-05-09","name":"调休上班"},{"date":"2026-09-20","name":"调休上班"},{"date":"2026-10-10","name":"调休上班"}],"pauses":[],"stages":[{"name":"MRD 阶段","short":"MRD","desc":"收集、评审、筛选需求"},{"name":"PRD 阶段","short":"PRD·设计","desc":"写详细方案、技术终审、设计出稿"},{"name":"开发中","short":"开发","desc":"研发开发，PM 答疑跟进"},{"name":"测试中","short":"测试","desc":"提测、测试、产品自测"},{"name":"发布中","short":"发布","desc":"代码冻结 → 服务端上线 → 灰度"},{"name":"已全量发布","short":"上线","desc":"本版本已上线"}],"template":[{"key":"mrd_start","w":0,"d":0,"label":"MRD-开始组内提报","stage":"MRD 阶段","desc":"版本需求收集开始：组内各自把想做的需求写成 MRD 提报。先想清楚背景、目标和预期收益。"},{"key":"mrd_outer","w":0,"d":2,"label":"MRD-组内没评完+组外","stage":"MRD 阶段","desc":"组内没评完的 MRD 继续评；同时和组外（有依赖的兄弟团队）对齐。"},{"key":"mrd_scope","w":0,"d":4,"label":"MRD-确定需求范围-录入平台","stage":"MRD 阶段","desc":"定下这一版要做哪些 MRD，并录入需求平台。没录入的一般赶不上这一版。"},{"key":"mrd_tech","w":1,"d":0,"label":"MRD-技术预审","stage":"MRD 阶段","desc":"研发初步看 MRD，评估能不能做、大概多少工作量、有什么风险。"},{"key":"mrd_final","w":1,"d":1,"label":"MRD-确定哪些流入终审","stage":"MRD 阶段","desc":"根据预审结果筛选，决定哪些需求进入 PRD 阶段、参加后面的技术终审。"},{"key":"ds_inner","w":1,"d":2,"label":"设计稿组内评审","stage":"MRD 阶段","desc":"设计稿先在组内过一遍，对齐交互和视觉方向。"},{"key":"prd_design","w":2,"d":0,"label":"PRD-设计提需截止","stage":"PRD 阶段","desc":"需要设计师出稿的需求，最晚今天提给设计。"},{"key":"prd_rdc","w":2,"d":1,"label":"PRD-下班前RDC截止绑定","stage":"PRD 阶段","desc":"今天下班前要在 RDC 上把需求绑定到这个版本，过了截止可能赶不上。"},{"key":"prd_review","w":2,"d":2,"label":"PRD-组内评审","stage":"PRD 阶段","desc":"详细方案（PRD）先在组内评，查漏补缺。"},{"key":"prd_tech","w":2,"d":3,"label":"PRD-技术终审","stage":"PRD 阶段","desc":"和研发、测试正式评 PRD，确认方案可行并排期。"},{"key":"prd_scope","w":2,"d":4,"label":"PRD-确定终审需求范围","stage":"PRD 阶段","desc":"最终锁定这一版做哪些需求，之后原则上不再加。"},{"key":"prd_track","w":3,"d":0,"label":"PRD-埋点评审","stage":"PRD 阶段","desc":"和数据、研发确认埋点方案，保证上线后能看效果数据。"},{"key":"ds_dev","w":3,"d":3,"label":"设计稿设计&开发评审","stage":"PRD 阶段","desc":"设计稿和设计师、研发一起过，确认能实现、细节没有歧义。"},{"key":"dev","w":3,"d":4,"label":"PRD-开发","stage":"开发中","desc":"研发开始写代码。PM 随时答疑，需求原则上不再改。"},{"key":"qa_server","w":4,"d":2,"label":"测试-服务端提测","stage":"测试中","desc":"服务端开发完成，交给测试同学测。"},{"key":"qa_client","w":4,"d":3,"label":"测试-客户端提测","stage":"测试中","desc":"App 端开发完成，交给测试同学测。"},{"key":"qa_self","w":5,"d":0,"label":"测试-产品自测","stage":"测试中","desc":"PM 自己在测试环境把功能走一遍，对照 PRD 验收。"},{"key":"rel_freeze","w":5,"d":1,"label":"发布-服务端代码停止修改","stage":"发布中","desc":"服务端代码冻结，之后只修严重 bug。"},{"key":"rel_server","w":5,"d":3,"label":"发布-服务端","stage":"发布中","desc":"服务端上线到线上环境。"},{"key":"rel_gray","w":5,"d":4,"label":"发布-客户端灰度包","stage":"发布中","desc":"App 新版本先推给一小部分用户，观察数据和问题。"},{"key":"rel_prod","w":6,"d":2,"label":"发布-客户端正式包","stage":"已全量发布","desc":"App 新版本全量发布（应用商店上线）。"}],"overrides":{},"extras":[],"reqs":{},"flags":{"6.0":"原表没有，按规律推算","6.1":"原表没有，按规律推算","6.2":"原表没有，按规律推算","6.3|ds_inner":"原表空着，按规律补","6.4|prd_scope":"原表空着，按规律补","6.4|dev":"原表空着，按规律补","6.4|qa_client":"原表空着，按规律补","6.5|prd_review":"原表空着，按规律补","6.5|prd_tech":"原表空着，按规律补","6.5|prd_scope":"原表空着，按规律补","6.6|mrd_scope":"原表空着，按规律补"},"log":[{"id":"v3","at":"2026-09-17","items":["新增离线网页：不用 Claude、不用翻墙也能打开，改完可以下载新版网页发给大家"]},{"id":"v2","at":"2026-09-17","items":["改成可复用、可多人编辑的版本：版本号、周期、假期、暂停周、流程模板都能在页面里改"]},{"id":"init","at":"2026-09-17","items":["根据 mt 的迭代表初始化：6.3 起始周 = 9/7，双周一版","设计稿组内评审放在各版本第二周周三","中秋、国庆里的节点顺延到假期后第一个工作日"]}],"updatedAt":"2026-09-17T08:00:00.000Z"}</script>
+
+<script id="app">
+(function(){
+'use strict';
+/* ---------- 工具 ---------- */
+var DAY = 86400000;
+function toMs(s){ var p = s.split('-').map(Number); return Date.UTC(p[0], p[1]-1, p[2]); }
+function toISO(ms){ return new Date(ms).toISOString().slice(0,10); }
+function addDays(s,n){ return toISO(toMs(s) + n*DAY); }
+function dow(s){ return (new Date(toMs(s)).getUTCDay()+6)%7; }
+function diff(a,b){ return Math.round((toMs(b)-toMs(a))/DAY); }
+var WD = ['周一','周二','周三','周四','周五','周六','周日'];
+function md(s){ var d = new Date(toMs(s)); return (d.getUTCMonth()+1)+'/'+d.getUTCDate(); }
+function mdCN(s){ var d = new Date(toMs(s)); return (d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日'; }
+function ymCN(s){ var d = new Date(toMs(s)); return d.getUTCFullYear()+'年'+(d.getUTCMonth()+1)+'月'; }
+function monthStart(s, add){ var d = new Date(toMs(s)); return toISO(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+(add||0), 1)); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function clone(o){ return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); }
+function isDate(s){ return /^\d{4}-\d{2}-\d{2}$/.test(s || ''); }
+var CNW = ['','起始周','第二周','第三周','第四周','第五周','第六周','第七周','第八周','第九周','第十周'];
+function weekName(n){ return CNW[n] || ('第'+n+'周'); }
+var TODAY = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+
+/* ---------- 状态 ---------- */
+var S0 = JSON.parse(document.getElementById('state').textContent);
+var S = clone(S0);
+var ops = [];
+var readOnly = false;
+var artifactApi = null;
+var saving = false;
+var statusMsg = '', statusCls = '';
+var replayOffer = null;
+var STASH = 'vc-stash';
+var MODE = (window.claude && typeof window.claude.use === 'function') ? 'claude' : 'file';
+var downloadsApi = null;
+function store(){ try { return MODE === 'file' ? window.localStorage : window.sessionStorage; } catch(e) { return null; } }
+function sGet(k){ try { var st = store(); return st ? st.getItem(k) : null; } catch(e) { return null; } }
+function sSet(k,v){ try { var st = store(); if (st) st.setItem(k,v); } catch(e) {} }
+function sDel(k){ try { var st = store(); if (st) st.removeItem(k); } catch(e) {} }
+
+function applyOp(obj, op){
+  var o = obj;
+  for (var i=0; i<op.path.length-1; i++){
+    var k = op.path[i];
+    if (o[k] == null || typeof o[k] !== 'object') o[k] = {};
+    o = o[k];
+  }
+  var last = op.path[op.path.length-1];
+  if (op.v === undefined || op.v === null) delete o[last]; else o[last] = clone(op.v);
+}
+function stash(extra){
+  try {
+    if (!ops.length) { sDel(STASH); return; }
+    var prev = {}; try { prev = JSON.parse(sGet(STASH) || '{}') || {}; } catch(e) {}
+    sSet(STASH, JSON.stringify(Object.assign({base:S0.updatedAt, ops:ops, pid:prev.pid||null}, extra||{})));
+  } catch(e) {}
+}
+(function restore(){
+  var st = null;
+  try { st = JSON.parse(sGet(STASH) || 'null'); } catch(e) {}
+  if (!st || !st.ops || !st.ops.length) return;
+  var landed = st.pid && (S0.log||[]).some(function(l){ return l.id === st.pid; });
+  if (landed) { sDel(STASH); return; }
+  if (st.base === S0.updatedAt) { ops = st.ops; ops.forEach(function(op){ applyOp(S, op); }); return; }
+  replayOffer = st.ops;
+})();
+
+var sel = TODAY;
+try { var ss = sessionStorage.getItem('vc-sel'); if (isDate(ss)) sel = ss; } catch(e) {}
+var openSecs = {};
+
+/* ---------- 日历模型 ---------- */
+var HOL = {}, MK = {}, verCache = {};
+function rebuild(){
+  HOL = {}; MK = {}; verCache = {};
+  (S.holidays||[]).forEach(function(h){
+    if (!isDate(h.from) || !isDate(h.to)) return;
+    for (var d = h.from, i = 0; d <= h.to && i < 60; d = addDays(d,1), i++) HOL[d] = h.name || '假期';
+  });
+  (S.makeup||[]).forEach(function(x){ if (isDate(x.date)) MK[x.date] = x.name || '调休上班'; });
+}
+function isWork(s){ return MK[s] ? true : (!HOL[s] && dow(s) < 5); }
+function nextWork(s){ var t = s, i = 0; while (!isWork(t) && i++ < 60) t = addDays(t,1); return t; }
+function pauseShift(s){
+  var add = 0;
+  (S.pauses||[]).forEach(function(p){ if (isDate(p.from) && p.from <= s) add += Number(p.weeks)||0; });
+  return addDays(s, add*7);
+}
+function pauseWeeksBetween(a,b){
+  var w = 0;
+  (S.pauses||[]).forEach(function(p){ if (isDate(p.from) && p.from > a && p.from <= b) w += Number(p.weeks)||0; });
+  return w;
+}
+function parseV(id){ var m = /^(\d+)\.(\d+)$/.exec(String(id||'').trim()); return m ? [Number(m[1]), Number(m[2])] : null; }
+function idAt(n){
+  var a = parseV(S.anchor.version); if (!a) return null;
+  var M = Number(S.minorMax)||0;
+  if (M > 0){
+    var t = a[0]*(M+1) + a[1] + n;
+    return t < 0 ? null : Math.floor(t/(M+1)) + '.' + (t%(M+1));
+  }
+  var b = a[1] + n; return b < 0 ? null : a[0] + '.' + b;
+}
+function colorOf(id){
+  var p = parseV(id) || [0,0];
+  return 'var(--c' + (((p[0]*7 + p[1]) % 8 + 8) % 8) + ')';
+}
+function stageInfo(name){
+  var list = S.stages || [];
+  for (var i=0;i<list.length;i++) if (list[i].name === name) return {i:i, s:list[i]};
+  return {i:-1, s:{name:name, short:name, desc:''}};
+}
+function cmpEv(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.order - b.order); }
+function version(n){
+  if (verCache.hasOwnProperty(n)) return verCache[n];
+  var id = idAt(n);
+  if (!id){ verCache[n] = null; return null; }
+  var base0 = addDays(S.anchor.start, n*S.cadenceWeeks*7);
+  var start = pauseShift(base0);
+  var evs = (S.template||[]).map(function(t,i){
+    var base = pauseShift(addDays(base0, (Number(t.w)||0)*7 + (Number(t.d)||0)));
+    var date = base, note = '';
+    if (S.holidayRule === 'shift'){
+      date = nextWork(base);
+      if (date !== base) note = '原定 '+md(base)+'，'+(HOL[base]||'非工作日')+'顺延';
+    } else if (!isWork(base)) note = (HOL[base]||'非工作日')+'，待确认';
+    var k = id+'|'+t.key, ov = (S.overrides||{})[k];
+    if (ov && isDate(ov.date)){ date = ov.date; note = (ov.note ? ov.note+'，' : '已改期，') + '原定 '+md(base); }
+    return {v:id, key:t.key, order:i, label:t.label, stage:t.stage, desc:t.desc||'', base:base, date:date, note:note,
+            moved: date !== base, changed: !!(ov && isDate(ov.date)), flag: (S.flags||{})[k] || (S.flags||{})[id] || ''};
+  });
+  (S.extras||[]).forEach(function(e,i){
+    if (e.v !== id || !isDate(e.date)) return;
+    evs.push({v:id, key:'extra'+i, order:1000+i, label:e.label, stage:null, desc:e.note||'', base:e.date, date:e.date, note:'', moved:false, extra:true, flag:''});
+  });
+  evs.sort(cmpEv);
+  var V = {id:id, n:n, start:start, evs:evs,
+    first: evs.length ? (evs[0].date < start ? evs[0].date : start) : start,
+    end: evs.length ? evs[evs.length-1].date : start};
+  verCache[n] = V;
+  return V;
+}
+function versionsIn(a,b){
+  var per = Math.max(1, Number(S.cadenceWeeks)||2) * 7;
+  var maxW = 0; (S.template||[]).forEach(function(t){ maxW = Math.max(maxW, Number(t.w)||0); });
+  var pauseW = 0; (S.pauses||[]).forEach(function(p){ pauseW += Number(p.weeks)||0; });
+  var span = (maxW+2)*7 + pauseW*7 + 30;
+  var n0 = Math.floor((diff(S.anchor.start,a) - span)/per) - 1;
+  var n1 = Math.ceil(diff(S.anchor.start,b)/per) + 1;
+  var out = [];
+  for (var n=n0; n<=n1; n++){
+    var V = version(n);
+    if (V && V.first <= b && V.end >= a) out.push(V);
+  }
+  return out;
+}
+function stageAt(V,d){
+  var s = null;
+  V.evs.forEach(function(e){ if (e.date <= d && e.stage) s = e.stage; });
+  return s || '未开始';
+}
+function eventsOn(d){
+  var out = [];
+  versionsIn(d,d).forEach(function(V){ V.evs.forEach(function(e){ if (e.date === d) out.push(e); }); });
+  return out.sort(function(a,b){ return cmpEv(a,b) || (a.v < b.v ? -1 : 1); });
+}
+function templateByKey(k){ return (S.template||[]).find(function(t){ return t.key === k; }); }
+
+/* ---------- 渲染：查看 ---------- */
+function chip(e){
+  var cls = 'chip' + (e.flag ? ' inf' : '') + (e.extra ? ' extra' : '');
+  return '<span class="'+cls+'" style="--vc:'+colorOf(e.v)+'" title="'+esc(e.desc + (e.flag ? '（'+e.flag+'）' : ''))+'">'+
+    '<span class="v">'+esc(e.v)+'</span>'+esc(e.label)+(e.note ? '<span class="n">'+esc(e.note)+'</span>' : '')+'</span>';
+}
+
+function viewHTML(){
+  var gA = monthStart(sel,-1), gB = addDays(monthStart(sel,4), -1);
+  var h = '';
+  h += '<header><div><h1>'+esc(S.team)+' · 版本日历</h1>'+
+       '<p class="sub">每 '+esc(S.cadenceWeeks)+' 周一版，按流程模板自动排到以后所有版本。点任意一天看当天各版本进度。</p></div>'+
+       '<div class="controls"><button type="button" data-act="prevW">‹ 上周</button>'+
+       '<button type="button" class="primary" data-act="today">回到今天</button>'+
+       '<button type="button" data-act="nextW">下周 ›</button>'+
+       '<input id="pick" type="date" aria-label="选择日期" value="'+sel+'">'+
+       (MODE === 'claude' && downloadsApi ? '<button type="button" data-act="dlOffline" title="生成一个不需要 Claude 就能打开的网页文件">下载离线版</button>' : '')+
+       '</div></header>';
+  h += alertsHTML(gA, gB);
+  h += dayHTML();
+  h += weekHTML();
+  h += ganttHTML(gA, gB);
+  h += reqsHTML(gA, gB);
+  h += ruleHTML();
+  h += glossHTML();
+  h += notesHTML(gA, gB);
+  h += editHTML();
+  return h;
+}
+
+function alertsHTML(gA, gB){
+  var out = '';
+  if (replayOffer){
+    out += '<div class="warn"><b>'+(MODE === 'file' ? '你之前在旧版网页里做过修改，还没合进这个版本。' : '有一份修改没保存成功</b>（可能是别人刚好先保存了）。<b>')+'</b>要在这个版本上重新应用吗？'+
+      '<button type="button" data-act="replay">重新应用</button><button type="button" data-act="dropReplay">丢弃</button></div>';
+  }
+  var piles = [];
+  for (var d = TODAY, i = 0; i < 90; d = addDays(d,1), i++){
+    var n = eventsOn(d).length;
+    if (n >= 6) piles.push(mdCN(d)+' '+WD[dow(d)]+'（'+n+' 个）');
+  }
+  if (piles.length) out += '<div class="warn"><b>节点扎堆：</b>'+piles.join('、')+'。一般是假期顺延造成的，实际安排建议和 mt 确认，确认后在下方「编辑 → 节点改期」里调整。</div>';
+  var maxY = 0; (S.holidays||[]).forEach(function(x){ if (isDate(x.to)) maxY = Math.max(maxY, Number(x.to.slice(0,4))); });
+  var needY = Number(gB.slice(0,4));
+  if (needY > maxY) out += '<div class="warn"><b>'+needY+' 年的放假安排还没录入。</b>国务院一般在前一年 11 月前后公布，公布后在「编辑 → 假期与调休」里添加，节点会自动顺延。</div>';
+  return out;
+}
+
+function dayHTML(){
+  var tags = '';
+  if (sel === TODAY) tags += '<span class="tag today">今天</span>';
+  if (HOL[sel]) tags += '<span class="tag hol">'+esc(HOL[sel])+'假期</span>';
+  if (MK[sel]) tags += '<span class="tag mk">'+esc(MK[sel])+'</span>';
+  var active = versionsIn(sel, sel);
+  var cards = active.map(function(V){
+    var wk = Math.floor((diff(V.start, sel) - 7*pauseWeeksBetween(V.start, sel))/7) + 1;
+    var st = stageAt(V, sel), si = stageInfo(st);
+    var todays = V.evs.filter(function(e){ return e.date === sel; });
+    var nxt = V.evs.find(function(e){ return e.date > sel; });
+    var vflag = (S.flags||{})[V.id];
+    return '<article class="card" style="--vc:'+colorOf(V.id)+'">'+
+      '<div class="card-top"><span class="vname">'+esc(V.id)+'</span><span class="wk">'+(sel < V.start ? '起始周之前' : weekName(wk))+' · '+WD[dow(sel)]+'</span></div>'+
+      (vflag ? '<div><span class="tag inf">'+esc(vflag)+'</span></div>' : '')+
+      '<div><span class="stage">'+esc(st)+'</span></div>'+
+      '<div class="stage-desc">'+esc(st === '未开始' ? '还没到起始周' : si.s.desc)+'</div>'+
+      '<div class="todo"><span class="lbl">当天节点</span>'+
+      (todays.length ? todays.map(function(e){
+        return '<div class="todo-item"><b>'+esc(e.label)+'</b>'+
+          (e.flag && e.flag !== vflag ? ' <span class="tag inf">'+esc(e.flag)+'</span>' : '')+
+          (e.note ? ' <span class="tag sh">'+esc(e.note)+'</span>' : '')+
+          (e.desc ? '<p>'+esc(e.desc)+'</p>' : '')+'</div>';
+      }).join('') : '<span class="none">当天没有节点</span>')+'</div>'+
+      (nxt ? '<div class="next">下一个：<strong>'+esc(nxt.label)+'</strong> · '+md(nxt.date)+' '+WD[dow(nxt.date)]+'（'+diff(sel,nxt.date)+' 天后）</div>' : '')+
+      '</article>';
+  }).join('');
+  return '<section aria-labelledby="h-day"><div class="sec-head"><h2 id="h-day">当天各版本进度</h2><span class="hint">虚线框 = 原表没有或空着、按规律推算的节点</span></div>'+
+    '<div class="dayline"><span class="big">'+mdCN(sel)+' '+WD[dow(sel)]+'</span>'+tags+'</div>'+
+    '<div class="cards">'+(cards || '<p class="none">这一天没有进行中的版本。</p>')+'</div></section>';
+}
+
+function weekHTML(){
+  var ws = addDays(sel, -dow(sel));
+  var days = [];
+  for (var i=0;i<7;i++){
+    var d = addDays(ws,i), evs = eventsOn(d);
+    if (i < 5 || MK[d] || evs.length) days.push({d:d, evs:evs});
+  }
+  var cells = days.map(function(x){
+    var d = x.d, cls = 'day' + (d === sel ? ' is-sel' : '') + (HOL[d] ? ' is-hol' : '');
+    return '<div class="'+cls+'" data-day="'+d+'" tabindex="0" role="button" aria-pressed="'+(d===sel)+'">'+
+      '<div class="day-h"><span class="d">'+WD[dow(d)]+' <span class="mono">'+md(d)+'</span></span>'+
+      (d === TODAY ? '<span class="tag today">今天</span>' : '')+
+      (HOL[d] ? '<span class="tag hol">'+esc(HOL[d])+'</span>' : '')+
+      (MK[d] ? '<span class="tag mk">'+esc(MK[d])+'</span>' : '')+'</div>'+
+      (x.evs.map(chip).join('') || '<span class="none">—</span>')+
+      (x.evs.length >= 6 ? '<span class="tag sh">节点扎堆，建议和 mt 确认</span>' : '')+
+      '</div>';
+  }).join('');
+  return '<section aria-labelledby="h-week"><div class="sec-head"><h2 id="h-week">本周节点</h2><span class="hint">'+mdCN(ws)+' – '+mdCN(addDays(ws,6))+'</span></div>'+
+    '<div class="week" style="--cols:'+days.length+'">'+cells+'</div></section>';
+}
+
+function ganttHTML(A, B){
+  var total = diff(A, B) + 1, LW = 56;
+  var pos = function(s){ return 'calc('+LW+'px + (100% - '+LW+'px) * '+(diff(A,s)/total).toFixed(5)+')'; };
+  var pct = function(s){ return (diff(A,s)/total*100).toFixed(3)+'%'; };
+  var h = '<div class="g-axis">';
+  for (var m = 0; m < 5; m++){ var ms = monthStart(A, m); h += '<span style="left:'+pos(ms)+'">'+ymCN(ms).replace(/^\d+年/, m===0 || ms.slice(5,7)==='01' ? ms.slice(0,4)+'年' : '')+'</span>'; }
+  h += '</div>';
+  Object.keys(HOL).forEach(function(d){ if (d >= A && d <= B) h += '<div class="g-band" style="left:'+pos(d)+';width:calc((100% - '+LW+'px) / '+total+')"></div>'; });
+  var nStages = Math.max(1, (S.stages||[]).length - 1);
+  versionsIn(A, B).forEach(function(V){
+    var segs = [], cur = null, curStart = V.start;
+    V.evs.forEach(function(e){
+      if (!e.stage) return;
+      if (cur === null){ cur = e.stage; curStart = V.start; return; }
+      if (e.stage !== cur){ segs.push([cur, curStart, e.date]); cur = e.stage; curStart = e.date; }
+    });
+    if (cur !== null && segs.length && stageInfo(cur).i === (S.stages||[]).length - 1) { /* 已上线：不画 */ }
+    else if (cur !== null) segs.push([cur, curStart, addDays(V.end,1)]);
+    h += '<div class="g-row" style="--vc:'+colorOf(V.id)+'"><span class="rl">'+esc(V.id)+'</span><div class="g-track">';
+    segs.forEach(function(sg){
+      var a = sg[1] < A ? A : sg[1], b = sg[2] > addDays(B,1) ? addDays(B,1) : sg[2];
+      var w = diff(a,b); if (w <= 0) return;
+      var si = stageInfo(sg[0]), idx = Math.max(0, si.i);
+      var mix = Math.round(20 + 80*idx/Math.max(1,nStages-1));
+      h += '<div class="g-seg'+(mix >= 70 ? ' dark' : '')+'" style="--mix:'+Math.min(100,mix)+'%;left:'+pct(a)+';width:'+(w/total*100).toFixed(3)+'%" title="'+esc(V.id+' '+si.s.short+'：'+md(sg[1])+' – '+md(addDays(sg[2],-1)))+'">'+(w >= 5 ? esc(si.s.short) : '')+'</div>';
+    });
+    h += '</div></div>';
+  });
+  if (TODAY >= A && TODAY <= B) h += '<div class="g-line" style="left:'+pos(TODAY)+'"><b>今天</b></div>';
+  if (sel !== TODAY && sel >= A && sel <= B) h += '<div class="g-line selL" style="left:'+pos(sel)+'"></div>';
+  var legend = (S.stages||[]).slice(0,-1).map(function(s,i){
+    return '<span><i style="--mix:'+Math.round(20 + 80*i/Math.max(1,nStages-1))+'%"></i>'+esc(s.short)+'</span>';
+  }).join('') + '<span>颜色越深越接近上线；同一色系 = 同一版本</span>';
+  return '<section aria-labelledby="h-g"><div class="sec-head"><h2 id="h-g">版本全景</h2><span class="hint">'+ymCN(A)+' – '+ymCN(B)+' · 红色底 = 法定假期 · 竖线 = 今天</span></div>'+
+    '<div class="scroll"><div class="gantt"><div class="g-in">'+h+'</div></div></div><div class="legend">'+legend+'</div></section>';
+}
+
+function reqsHTML(A, B){
+  var vs = versionsIn(sel, B).filter(function(V){ return V.end >= sel; });
+  var cards = vs.map(function(V){
+    var list = (S.reqs||{})[V.id] || [];
+    return '<div class="req" style="--vc:'+colorOf(V.id)+'"><h3>'+esc(V.id)+'</h3>'+
+      '<div class="hint">'+mdCN(V.start)+' 起 · '+esc(stageAt(V, sel))+'</div>'+
+      (list.length ? '<ul class="plain">'+list.map(function(r){ return '<li>'+esc(r)+'</li>'; }).join('')+'</ul>' : '<span class="none">需求待补充</span>')+'</div>';
+  }).join('');
+  return '<section aria-labelledby="h-req"><div class="sec-head"><h2 id="h-req">各版本需求</h2><span class="hint">在「编辑 → 版本需求」里填写</span></div><div class="reqs">'+cards+'</div></section>';
+}
+
+function ruleHTML(){
+  var maxW = 0; (S.template||[]).forEach(function(t){ maxW = Math.max(maxW, Number(t.w)||0); });
+  var h = '<thead><tr><th>版本内周次</th>'+WD.slice(0,5).map(function(d){ return '<th>'+d+'</th>'; }).join('')+'</tr></thead><tbody>';
+  for (var w=0; w<=maxW; w++){
+    h += '<tr><th>'+weekName(w+1)+'</th>';
+    for (var d=0; d<5; d++){
+      h += '<td>'+(S.template||[]).filter(function(t){ return Number(t.w)===w && Number(t.d)===d; }).map(function(t){ return '<div>'+esc(t.label)+'</div>'; }).join('')+'</td>';
+    }
+    h += '</tr>';
+  }
+  return '<section aria-labelledby="h-rule"><div class="sec-head"><h2 id="h-rule">一个版本的完整节奏</h2><span class="hint">所有版本都套这张表；流程变了在「编辑 → 流程模板」里改</span></div>'+
+    '<div class="panel tbl-scroll"><table class="wide">'+h+'</tbody></table></div></section>';
+}
+
+var GLOSS = [
+  ['MRD','Market Requirements Document，市场需求文档。讲清“为什么做、做什么”，是需求的立项材料。'],
+  ['PRD','Product Requirements Document，产品需求文档。讲清“具体怎么做”，研发、测试、设计都照着它干活。'],
+  ['组内 / 组外','组内 = 本方向自己的团队；组外 = 其他业务线或有依赖的兄弟团队。'],
+  ['技术预审 vs 技术终审','预审在 MRD 阶段，研发粗评可行性和工作量；终审在 PRD 阶段，正式评方案并排期。'],
+  ['流入终审','预审后被选中、继续写 PRD 并参加技术终审的需求。'],
+  ['RDC','公司内部的研发协作平台，需求在这里绑定到版本（具体操作建议问 mt）。'],
+  ['设计提需','给设计师提出稿需求，提需截止后再提可能排不上。'],
+  ['埋点评审','确认要在哪些位置上报用户行为数据，保证上线后能分析效果。'],
+  ['提测','开发完成后把功能交给测试（QA）测试；服务端、客户端分开提测。'],
+  ['产品自测','PM 在测试环境自己验收，确认做出来的和 PRD 一致。'],
+  ['代码停止修改','又叫代码冻结，发布前不再合入新改动，只修严重 bug。'],
+  ['灰度包 / 正式包','灰度包先给少量用户用，没问题再发正式包全量上线。']
+];
+function glossHTML(){
+  return '<section aria-labelledby="h-gl"><div class="sec-head"><h2 id="h-gl">名词速查</h2></div><div class="panel"><dl class="gloss">'+
+    GLOSS.map(function(g){ return '<div><dt>'+esc(g[0])+'</dt><dd>'+esc(g[1])+'</dd></div>'; }).join('')+'</dl></div></section>';
+}
+
+function notesHTML(A, B){
+  var vs = versionsIn(A, B), moved = [], flagged = [];
+  vs.forEach(function(V){ V.evs.forEach(function(e){
+    if (e.date < A || e.date > B) return;
+    if (e.moved) moved.push(e);
+    if (e.flag && e.flag !== (S.flags||{})[V.id]) flagged.push(e);
+  }); });
+  var vflags = vs.filter(function(V){ return (S.flags||{})[V.id]; });
+  var rule = S.holidayRule === 'shift' ? '落在假期或周末的节点，顺延到下一个工作日。' : '落在假期的节点不移动，只标出“待确认”。';
+  var movedRows = moved.map(function(e){
+    return '<tr><td style="color:'+colorOf(e.v)+';font-weight:700">'+esc(e.v)+'</td><td>'+esc(e.label)+'</td><td class="mono">'+md(e.base)+'</td><td class="mono">'+md(e.date)+'</td><td>'+(e.changed ? '手动改期' : '假期顺延')+'</td></tr>';
+  }).join('');
+  var log = (S0.log||[]).slice(0,12).map(function(l){
+    return '<li><span class="mono">'+esc(l.at)+'</span> '+(l.items||[]).map(esc).join('；')+'</li>';
+  }).join('');
+  return '<section aria-labelledby="h-note"><div class="sec-head"><h2 id="h-note">调整说明</h2><span class="hint">只列出全景图时间范围内的</span></div><div class="cols2">'+
+    '<div class="panel"><h3>改期和顺延的节点（'+moved.length+' 个）</h3><p class="hint" style="margin:2px 0 0">'+rule+'</p>'+
+    (moved.length ? '<div class="tbl-scroll" style="margin-top:8px"><table><thead><tr><th>版本</th><th>节点</th><th>原定</th><th>现在</th><th>原因</th></tr></thead><tbody>'+movedRows+'</tbody></table></div>' : '<p class="none">没有</p>')+'</div>'+
+    '<div class="panel"><h3>推算的节点</h3><ul class="plain">'+
+      vflags.map(function(V){ return '<li><b>'+esc(V.id)+'</b>：'+esc(S.flags[V.id])+'</li>'; }).join('')+
+      (flagged.length ? '<li>'+flagged.map(function(e){ return esc(e.v+' '+e.label+'（'+md(e.base)+'）'); }).join('、')+'：'+esc(flagged[0].flag)+'</li>' : '')+
+      '<li>其余版本按流程模板和“每 '+esc(S.cadenceWeeks)+' 周一版”自动生成。</li></ul>'+
+    '<h3 style="margin-top:14px">更新记录</h3><ul class="plain">'+log+'</ul></div>'+
+    '</div></section>';
+}
+
+/* ---------- 渲染：编辑 ---------- */
+function versionOptions(selected){
+  var vs = versionsIn(addDays(TODAY,-60), addDays(TODAY,240));
+  if (selected && !vs.some(function(V){ return V.id === selected; })) vs.unshift({id:selected});
+  return vs.map(function(V){ return '<option value="'+esc(V.id)+'"'+(V.id===selected?' selected':'')+'>'+esc(V.id)+'</option>'; }).join('');
+}
+function nodeOptions(){
+  return (S.template||[]).map(function(t){ return '<option value="'+esc(t.key)+'">'+esc(t.label)+'</option>'; }).join('');
+}
+function stageOptions(cur){
+  return (S.stages||[]).map(function(s){ return '<option'+(s.name===cur?' selected':'')+'>'+esc(s.name)+'</option>'; }).join('');
+}
+function det(id, title, hint, body){
+  return '<details data-sec="'+id+'"'+(openSecs[id]?' open':'')+'><summary>'+title+(hint?'<span class="hint">'+hint+'</span>':'')+'</summary>'+body+'</details>';
+}
+function editHTML(){
+  var cur = activeVersionId();
+  var basic =
+    '<div class="form">'+
+    '<label>团队名<input id="f-team" value="'+esc(S.team)+'"></label>'+
+    '<label>参照版本号<input id="f-av" value="'+esc(S.anchor.version)+'" size="6"></label>'+
+    '<label>该版本起始周周一<input id="f-as" type="date" value="'+esc(S.anchor.start)+'"></label>'+
+    '<label>每几周一版<input id="f-cad" type="number" min="1" max="8" value="'+esc(S.cadenceWeeks)+'" style="width:70px"></label>'+
+    '<label>小版本号到几进位<select id="f-mm">'+
+      [['9','到 .9 进位（6.9 → 7.0）'],['0','不进位（6.9 → 6.10）']].map(function(o){ return '<option value="'+o[0]+'"'+(String(S.minorMax)===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+
+      (['9','0'].indexOf(String(S.minorMax)) < 0 ? '<option value="'+esc(S.minorMax)+'" selected>到 .'+esc(S.minorMax)+' 进位</option>' : '')+
+    '</select></label>'+
+    '<label>假期里的节点<select id="f-hr"><option value="shift"'+(S.holidayRule==='shift'?' selected':'')+'>顺延到下一个工作日</option><option value="mark"'+(S.holidayRule==='mark'?' selected':'')+'>不动，只标“待确认”</option></select></label>'+
+    '<label>页面主人<input id="f-owner" value="'+esc(S.owner||'')+'" size="6"></label>'+
+    '<button type="button" data-act="basic">应用</button></div>'+
+    '<p class="hint">换算规则：以“参照版本”的起始周为基准，往前往后每隔 N 周一个版本。进入新的大版本时，只要把参照版本改成新版本号和它的起始周即可。</p>';
+
+  var ovs = Object.keys(S.overrides||{}).sort().map(function(k){
+    var p = k.split('|'), t = templateByKey(p[1]), o = S.overrides[k];
+    return '<div><b>'+esc(p[0])+'</b> '+esc(t ? t.label : p[1])+' → <span class="mono">'+esc(o.date)+'</span> '+esc(o.note||'')+'<button type="button" class="link" data-act="delOv" data-k="'+esc(k)+'">删除</button></div>';
+  }).join('');
+  var override =
+    '<div class="form"><label>版本<select id="o-v">'+versionOptions(cur)+'</select></label>'+
+    '<label>节点<select id="o-k">'+nodeOptions()+'</select></label>'+
+    '<label>新日期<input id="o-d" type="date"></label>'+
+    '<label class="grow">备注<input id="o-n" placeholder="例如：mt 通知改到周五"></label>'+
+    '<button type="button" data-act="addOv">改期</button></div>'+
+    '<div class="items">'+(ovs || '<span class="none">还没有手动改期</span>')+'</div>';
+
+  var exs = (S.extras||[]).map(function(e,i){
+    return '<div><b>'+esc(e.v)+'</b> <span class="mono">'+esc(e.date)+'</span> '+esc(e.label)+' <span class="hint">'+esc(e.note||'')+'</span><button type="button" class="link" data-act="delEx" data-i="'+i+'">删除</button></div>';
+  }).join('');
+  var extra =
+    '<div class="form"><label>版本<select id="x-v">'+versionOptions(cur)+'</select></label>'+
+    '<label>日期<input id="x-d" type="date"></label>'+
+    '<label class="grow">事项<input id="x-l" placeholder="例如：6.3 需求走查"></label>'+
+    '<label class="grow">说明<input id="x-n"></label>'+
+    '<button type="button" data-act="addEx">添加</button></div>'+
+    '<div class="items">'+(exs || '<span class="none">还没有额外事项</span>')+'</div>';
+
+  var reqV = formVal('r-v') || cur;
+  var req =
+    '<div class="form"><label>版本<select id="r-v" data-act-change="reqV">'+versionOptions(reqV)+'</select></label></div>'+
+    '<label class="hint" for="r-t" style="display:block;margin-top:8px">每行一条需求</label>'+
+    '<textarea id="r-t">'+esc(((S.reqs||{})[reqV]||[]).join('\n'))+'</textarea>'+
+    '<div class="form"><button type="button" data-act="saveReq">更新需求</button></div>';
+
+  var hols = (S.holidays||[]).slice().sort(function(a,b){ return a.from < b.from ? -1 : 1; }).map(function(x){
+    var i = S.holidays.indexOf(x);
+    return '<div><b>'+esc(x.name)+'</b> <span class="mono">'+esc(x.from)+(x.to!==x.from?' ~ '+esc(x.to):'')+'</span><button type="button" class="link" data-act="delHol" data-i="'+i+'">删除</button></div>';
+  }).join('');
+  var mks = (S.makeup||[]).slice().sort(function(a,b){ return a.date < b.date ? -1 : 1; }).map(function(x){
+    var i = S.makeup.indexOf(x);
+    return '<div><b>'+esc(x.name||'调休上班')+'</b> <span class="mono">'+esc(x.date)+' '+WD[dow(x.date)]+'</span><button type="button" class="link" data-act="delMk" data-i="'+i+'">删除</button></div>';
+  }).join('');
+  var holiday =
+    '<div class="form"><label>假期名<input id="h-n" placeholder="例如：元旦" size="8"></label>'+
+    '<label>开始<input id="h-a" type="date"></label><label>结束<input id="h-b" type="date"></label>'+
+    '<button type="button" data-act="addHol">添加假期</button></div>'+
+    '<div class="form"><label>调休上班日<input id="m-d" type="date"></label><button type="button" data-act="addMk">添加调休</button></div>'+
+    '<div class="cols2" style="margin-top:10px"><div class="items"><span class="lbl">放假</span>'+hols+'</div><div class="items"><span class="lbl">调休上班</span>'+(mks||'<span class="none">无</span>')+'</div></div>';
+
+  var ps = (S.pauses||[]).map(function(p,i){
+    return '<div><span class="mono">'+esc(p.from)+'</span> 起所有节点后移 '+esc(p.weeks)+' 周 <span class="hint">'+esc(p.note||'')+'</span><button type="button" class="link" data-act="delPause" data-i="'+i+'">删除</button></div>';
+  }).join('');
+  var pause =
+    '<div class="form"><label>从哪天起<input id="p-a" type="date"></label>'+
+    '<label>后移几周<input id="p-w" type="number" min="1" max="8" value="1" style="width:70px"></label>'+
+    '<label class="grow">说明<input id="p-n" placeholder="例如：春节封版"></label>'+
+    '<button type="button" data-act="addPause">添加</button></div>'+
+    '<div class="items">'+(ps || '<span class="none">没有暂停</span>')+'</div>';
+
+  var rows = (S.template||[]).map(function(t,i){
+    var wopts = ''; for (var w=0; w<12; w++) wopts += '<option value="'+w+'"'+(Number(t.w)===w?' selected':'')+'>'+weekName(w+1)+'</option>';
+    var dopts = WD.slice(0,5).map(function(d,j){ return '<option value="'+j+'"'+(Number(t.d)===j?' selected':'')+'>'+d+'</option>'; }).join('');
+    return '<tr data-i="'+i+'"><td><select id="t-w-'+esc(t.key)+'" data-tf="w">'+wopts+'</select></td>'+
+      '<td><select id="t-d-'+esc(t.key)+'" data-tf="d">'+dopts+'</select></td>'+
+      '<td><input id="t-l-'+esc(t.key)+'" class="w-lbl" data-tf="label" value="'+esc(t.label)+'"></td>'+
+      '<td><select id="t-s-'+esc(t.key)+'" data-tf="stage">'+stageOptions(t.stage)+'</select></td>'+
+      '<td><input id="t-x-'+esc(t.key)+'" class="w-desc" data-tf="desc" value="'+esc(t.desc||'')+'"></td>'+
+      '<td><button type="button" class="link" data-act="delTpl" data-i="'+i+'">删除</button></td></tr>';
+  }).join('');
+  var tpl =
+    '<p class="hint">改完一格就生效（所有版本一起变）。“阶段”指这个节点之后版本进入的阶段。</p>'+
+    '<div class="tbl-scroll tpl"><table class="wide"><thead><tr><th>周次</th><th>周几</th><th>节点名</th><th>之后进入</th><th>说明</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="form"><button type="button" data-act="addTpl">新增一个节点</button></div>';
+
+  return '<section aria-labelledby="h-edit" class="edit"><div class="sec-head"><h2 id="h-edit">编辑</h2>'+
+    '<span class="hint">'+(MODE === 'file'
+      ? '这是离线网页：修改会先记在你这台电脑的浏览器里。点底部「下载新版网页」生成新文件发到群里，大家打开新文件就是最新版；也可以把修改说明复制给'+esc(S.owner||'页面主人')+'。'
+      : '改动先在本页预览，点底部「保存并发布」后，打开这个链接的人都会看到。没有编辑权限的人可以把修改说明复制给'+esc(S.owner||'页面主人')+'。')+'</span></div>'+
+    '<div class="panel">'+
+    det('ov','节点改期','某个版本的某个节点改了日期', override)+
+    det('req','版本需求','', req)+
+    det('ex','额外事项','临时加的会、走查等', extra)+
+    det('hol','假期与调休','', holiday)+
+    det('pause','暂停周','封版、团建等整体后移', pause)+
+    det('basic','基本设置','版本号、周期、假期规则', basic)+
+    det('tpl','流程模板','节点和它在第几周周几', tpl)+
+    '</div></section>';
+}
+function activeVersionId(){
+  var vs = versionsIn(sel, sel);
+  return vs.length ? vs[vs.length-1].id : (idAt(0) || '');
+}
+
+function barHTML(){
+  if (!ops.length && !statusMsg) return '';
+  var copy = '';
+  if ((readOnly || MODE === 'file') && ops.length){
+    copy = '<div class="copybox"><label class="hint" for="copy-t">把下面这段发给'+esc(S.owner||'页面主人')+'：</label>'+
+      '<textarea id="copy-t" readonly>'+esc('版本日历修改建议：\n' + ops.map(function(o){ return '- ' + o.text; }).join('\n'))+'</textarea>'+
+      '<button type="button" data-act="copy">复制</button></div>';
+  }
+  return '<div class="bar" role="region" aria-label="保存"><div class="bar-in">'+
+    '<span class="grow status '+statusCls+'" role="status">'+(ops.length ? '有 '+ops.length+' 处修改'+(MODE === 'file' ? '（只在你的浏览器里）' : '还没保存')+'：'+esc(ops.slice(-2).map(function(o){ return o.text; }).join('；'))+(ops.length>2?' 等':'') : '')+(statusMsg ? ' '+esc(statusMsg) : '')+'</span>'+
+    (ops.length ? '<button type="button" data-act="discard">撤销全部</button>'+(readOnly ? '' : '<button type="button" class="primary" data-act="save"'+(saving?' disabled':'')+'>'+(saving?'保存中…':(MODE === 'file' ? '下载新版网页' : '保存并发布'))+'</button>') : '')+
+    copy+'</div></div>';
+}
+
+/* ---------- 渲染入口 ---------- */
+var root = document.getElementById('root');
+function snapshotForm(){
+  var snap = {};
+  root.querySelectorAll('.edit input[id], .edit select[id], .edit textarea[id]').forEach(function(el){ snap[el.id] = el.value; });
+  return snap;
+}
+var formSnap = {};
+function formVal(id){ return formSnap[id]; }
+function render(keep){
+  formSnap = keep === false ? {} : snapshotForm();
+  var sy = window.scrollY;
+  rebuild();
+  root.innerHTML = '<div class="wrap">'+viewHTML()+'</div>'+barHTML();
+  Object.keys(formSnap).forEach(function(id){
+    if (id === 'r-t' || id.indexOf('t-') === 0 || id.indexOf('f-') === 0) return;
+    var el = document.getElementById(id);
+    if (el && formSnap[id] !== undefined && !el.dataset.cleared) el.value = formSnap[id];
+  });
+  window.scrollTo(0, sy);
+}
+function setSel(d){
+  if (!isDate(d)) return;
+  sel = d;
+  try { sessionStorage.setItem('vc-sel', d); } catch(e) {}
+  render();
+}
+function change(path, v, text){
+  var op = {path:path, v: v === undefined ? null : clone(v), text:text};
+  ops.push(op);
+  applyOp(S, op);
+  statusMsg = ''; statusCls = '';
+  stash();
+  render();
+}
+function clearFields(ids){ ids.forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; delete formSnap[id]; }); }
+function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function say(msg, cls){ statusMsg = msg; statusCls = cls || ''; render(); }
+
+/* ---------- 保存 ---------- */
+function buildDoc(next){
+  var css = document.getElementById('css').textContent;
+  var app = document.getElementById('app').textContent;
+  var json = JSON.stringify(next).replace(/</g, '\\u003c');
+  var C = '</', T = 'script>';
+  return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'+
+    '<title>商详版本日历</title><style id="css">'+css+C+'style></head><body>'+
+    '<div id="root"></div><script type="application/json" id="state">'+json+C+T+
+    '<script id="app">'+app+C+T+'</body></html>';
+}
+function fileName(){ return 'version-calendar-' + TODAY.replace(/-/g,'') + '.html'; }
+function nextState(pid){
+  var next = clone(S);
+  next.updatedAt = new Date().toISOString();
+  if (ops.length) next.log = [{id:pid, at:TODAY, items:ops.map(function(o){ return o.text; })}].concat(next.log || []).slice(0,60);
+  return next;
+}
+function saveFile(){
+  var pid = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  var html = buildDoc(nextState(pid));
+  try {
+    var url = URL.createObjectURL(new Blob([html], {type:'text/html;charset=utf-8'}));
+    var a = document.createElement('a');
+    a.href = url; a.download = fileName(); a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 2000);
+    stash({pid:pid});
+    say('已下载「'+fileName()+'」。把这个新文件发到群里，大家打开它就是最新版。', 'ok');
+  } catch(e) {
+    say('这个浏览器不支持下载（比如微信内置浏览器），请用 Chrome、Edge 或 Safari 打开，或把修改说明复制给'+(S.owner||'页面主人')+'。', 'err');
+  }
+}
+function offlineDownload(){
+  if (!downloadsApi) return;
+  if (ops.length) { say('还有没保存的修改，先点「保存并发布」，再下载离线版。', 'err'); return; }
+  downloadsApi.save({filename: fileName(), data: buildDoc(clone(S0))}).then(function(r){
+    say(r && r.status === 'delivered' ? '已发送。' : '离线版已下载。发到飞书或微信群，大家用电脑浏览器打开即可，不需要 Claude。', 'ok');
+  }).catch(function(err){
+    var code = err && err.code;
+    if (code === 'declined') return;
+    if (code === 'rate_limited') { say('已经有一个下载确认框了，先处理它。', 'err'); return; }
+    say('这里暂时不能下载离线版。', 'err');
+  });
+}
+var READONLY_CODES = ['not_writer','not_granted','consent_required','capability_disabled','capability_removed','not_declared'];
+function save(retried){
+  if (!ops.length || saving) return;
+  if (MODE === 'file') { saveFile(); return; }
+  if (!artifactApi){ readOnly = true; say('当前打开方式不能保存，可以把修改说明复制给'+(S.owner||'页面主人')+'。', 'err'); return; }
+  var pid = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  var next = nextState(pid);
+  stash({pid:pid});
+  saving = true; say('保存中…');
+  artifactApi.publish(buildDoc(next)).then(function(){
+    saving = false; say('已保存，页面马上刷新到新版本。', 'ok');
+  }).catch(function(err){
+    saving = false;
+    var code = err && err.code;
+    if (code === 'conflict'){ say('别人刚保存了新版本，页面会刷新；刷新后可以把你的修改重新应用上去。'); return; }
+    if (READONLY_CODES.indexOf(code) >= 0){ readOnly = true; say('你只有查看权限，修改没法直接保存。', 'err'); return; }
+    if (code === 'rate_limited'){ say('保存太频繁了，稍等一分钟再点保存。', 'err'); return; }
+    if (code === 'too_large'){ say('内容太多，超过了页面大小上限。可以删掉一些旧的改期记录再试。', 'err'); return; }
+    if (code === 'invalid_content' || code === 'transform_error'){ say('页面内容生成出错，没有保存。请把问题告诉 Claude。', 'err'); return; }
+    if (!retried){ setTimeout(function(){ save(true); }, 800 + Math.random()*1200); return; }
+    say('保存失败（服务暂时不可用），修改还在，稍后再试。', 'err');
+  });
+}
+
+/* ---------- 事件 ---------- */
+root.addEventListener('click', function(ev){
+  var dayEl = ev.target.closest('[data-day]');
+  if (dayEl && !ev.target.closest('button')) { setSel(dayEl.dataset.day); return; }
+  var b = ev.target.closest('[data-act]');
+  if (!b || b.tagName === 'SELECT') return;
+  var act = b.dataset.act, i = Number(b.dataset.i);
+  switch (act){
+    case 'prevW': setSel(addDays(sel,-7)); break;
+    case 'nextW': setSel(addDays(sel,7)); break;
+    case 'today': setSel(TODAY); break;
+    case 'addOv': {
+      var v = val('o-v'), k = val('o-k'), d = val('o-d'), n = val('o-n');
+      if (!v || !k || !isDate(d)) { say('请选好版本、节点和新日期。', 'err'); break; }
+      var t = templateByKey(k);
+      clearFields(['o-d','o-n']);
+      change(['overrides', v+'|'+k], {date:d, note:n}, v+' '+(t?t.label:k)+' 改到 '+md(d)+(n?'（'+n+'）':''));
+      break;
+    }
+    case 'delOv': {
+      var key = b.dataset.k, p = key.split('|'), tt = templateByKey(p[1]);
+      change(['overrides', key], null, '取消 '+p[0]+' '+(tt?tt.label:p[1])+' 的改期');
+      break;
+    }
+    case 'addEx': {
+      var xv = val('x-v'), xd = val('x-d'), xl = val('x-l'), xn = val('x-n');
+      if (!xv || !isDate(xd) || !xl) { say('请填好版本、日期和事项。', 'err'); break; }
+      clearFields(['x-d','x-l','x-n']);
+      change(['extras'], (S.extras||[]).concat([{v:xv, date:xd, label:xl, note:xn}]), '新增 '+xv+' 事项「'+xl+'」（'+md(xd)+'）');
+      break;
+    }
+    case 'delEx': {
+      var ex = S.extras[i]; if (!ex) break;
+      change(['extras'], S.extras.filter(function(_,j){ return j !== i; }), '删除 '+ex.v+' 事项「'+ex.label+'」');
+      break;
+    }
+    case 'saveReq': {
+      var rv = val('r-v');
+      var lines = (document.getElementById('r-t').value || '').split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+      if (!rv) break;
+      change(['reqs', rv], lines.length ? lines : null, '更新 '+rv+' 需求（'+lines.length+' 条）');
+      break;
+    }
+    case 'addHol': {
+      var hn = val('h-n'), ha = val('h-a'), hb = val('h-b') || ha;
+      if (!hn || !isDate(ha) || !isDate(hb) || hb < ha) { say('请填假期名和正确的起止日期。', 'err'); break; }
+      clearFields(['h-n','h-a','h-b']);
+      change(['holidays'], (S.holidays||[]).concat([{from:ha, to:hb, name:hn}]), '新增假期 '+hn+' '+md(ha)+'–'+md(hb));
+      break;
+    }
+    case 'delHol': {
+      var hh = S.holidays[i]; if (!hh) break;
+      change(['holidays'], S.holidays.filter(function(_,j){ return j !== i; }), '删除假期 '+hh.name+' '+md(hh.from));
+      break;
+    }
+    case 'addMk': {
+      var mdt = val('m-d');
+      if (!isDate(mdt)) { say('请选择调休上班的日期。', 'err'); break; }
+      clearFields(['m-d']);
+      change(['makeup'], (S.makeup||[]).concat([{date:mdt, name:'调休上班'}]), '新增调休上班 '+md(mdt));
+      break;
+    }
+    case 'delMk': {
+      var mm = S.makeup[i]; if (!mm) break;
+      change(['makeup'], S.makeup.filter(function(_,j){ return j !== i; }), '删除调休上班 '+md(mm.date));
+      break;
+    }
+    case 'addPause': {
+      var pa = val('p-a'), pw = Number(val('p-w')), pn = val('p-n');
+      if (!isDate(pa) || !(pw >= 1)) { say('请填开始日期和后移周数。', 'err'); break; }
+      clearFields(['p-a','p-n']);
+      change(['pauses'], (S.pauses||[]).concat([{from:pa, weeks:pw, note:pn}]), md(pa)+' 起所有节点后移 '+pw+' 周'+(pn?'（'+pn+'）':''));
+      break;
+    }
+    case 'delPause': {
+      var pp = S.pauses[i]; if (!pp) break;
+      change(['pauses'], S.pauses.filter(function(_,j){ return j !== i; }), '取消 '+md(pp.from)+' 起的暂停');
+      break;
+    }
+    case 'basic': {
+      var team = val('f-team'), av = val('f-av'), as = val('f-as'), cad = Number(val('f-cad')), mm = Number(val('f-mm')), hr = val('f-hr'), ow = val('f-owner');
+      if (!parseV(av)) { say('版本号格式应为 数字.数字，例如 6.3', 'err'); break; }
+      if (!isDate(as) || dow(as) !== 0) { say('起始周要选一个周一。', 'err'); break; }
+      if (!(cad >= 1 && cad <= 8)) { say('每几周一版要在 1–8 之间。', 'err'); break; }
+      var pend = [];
+      if (team && team !== S.team) pend.push([['team'], team, '团队名改为 '+team]);
+      if (av !== S.anchor.version || as !== S.anchor.start) pend.push([['anchor'], {version:av, start:as}, '参照版本改为 '+av+'（起始周 '+md(as)+'）']);
+      if (cad !== Number(S.cadenceWeeks)) pend.push([['cadenceWeeks'], cad, '改为每 '+cad+' 周一版']);
+      if (mm !== Number(S.minorMax)) pend.push([['minorMax'], mm, mm > 0 ? '小版本号到 .'+mm+' 进位' : '小版本号不进位']);
+      if (hr !== S.holidayRule) pend.push([['holidayRule'], hr, hr === 'shift' ? '假期节点改为顺延' : '假期节点改为不动、只标记']);
+      if (ow !== (S.owner||'')) pend.push([['owner'], ow, '页面主人改为 '+ow]);
+      if (!pend.length) { say('基本设置没有变化。'); break; }
+      pend.forEach(function(p){ var op = {path:p[0], v:p[1], text:p[2]}; ops.push(op); applyOp(S, op); });
+      statusMsg = ''; stash(); render(false);
+      break;
+    }
+    case 'addTpl': {
+      var nt = (S.template||[]).concat([{key:'n'+Date.now().toString(36), w:0, d:0, label:'新节点', stage:(S.stages[0]||{}).name||'', desc:''}]);
+      change(['template'], nt, '流程模板新增一个节点');
+      break;
+    }
+    case 'delTpl': {
+      var tr = S.template[i]; if (!tr) break;
+      change(['template'], S.template.filter(function(_,j){ return j !== i; }), '流程模板删除「'+tr.label+'」');
+      break;
+    }
+    case 'save': save(false); break;
+    case 'dlOffline': offlineDownload(); break;
+    case 'discard':
+      ops = []; S = clone(S0); statusMsg = ''; readOnly = readOnly; stash(); render(false); break;
+    case 'replay':
+      replayOffer.forEach(function(op){ ops.push(op); applyOp(S, op); });
+      replayOffer = null; stash(); render(); break;
+    case 'dropReplay':
+      replayOffer = null; sDel(STASH); render(); break;
+    case 'copy': {
+      var ta = document.getElementById('copy-t');
+      var done = function(){ say('已复制。'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ta.value).then(done, function(){ ta.focus(); ta.select(); say('请按 Ctrl/⌘+C 复制选中的文字。'); });
+      } else { ta.focus(); ta.select(); say('请按 Ctrl/⌘+C 复制选中的文字。'); }
+      break;
+    }
+  }
+});
+root.addEventListener('keydown', function(ev){
+  var dayEl = ev.target.closest && ev.target.closest('[data-day]');
+  if (dayEl && ev.target === dayEl && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); setSel(dayEl.dataset.day); }
+});
+root.addEventListener('change', function(ev){
+  var t = ev.target;
+  if (t.id === 'pick') { setSel(t.value); return; }
+  if (t.id === 'r-v') {
+    var ta = document.getElementById('r-t');
+    if (ta) ta.value = ((S.reqs||{})[t.value] || []).join('\n');
+    return;
+  }
+  var tf = t.dataset && t.dataset.tf;
+  if (tf) {
+    var i = Number(t.closest('tr').dataset.i), row = S.template[i]; if (!row) return;
+    var v = tf === 'w' || tf === 'd' ? Number(t.value) : t.value.trim();
+    if (row[tf] === v) return;
+    var nt = clone(S.template); nt[i][tf] = v;
+    var names = {w:'周次', d:'周几', label:'名称', stage:'阶段', desc:'说明'};
+    change(['template'], nt, '流程节点「'+row.label+'」的'+names[tf]+'改为 '+(tf==='w'?weekName(v+1):tf==='d'?WD[v]:v));
+  }
+});
+root.addEventListener('toggle', function(ev){
+  var d = ev.target;
+  if (d.tagName === 'DETAILS' && d.dataset.sec) openSecs[d.dataset.sec] = d.open;
+}, true);
+
+render(false);
+
+if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('artifact').then(function(api){ artifactApi = api; }).catch(function(){ artifactApi = null; });
+  window.claude.use('downloads').then(function(api){ downloadsApi = api; if (api) render(); }).catch(function(){ downloadsApi = null; });
+}
+})();
+</script>
+</body></html>
