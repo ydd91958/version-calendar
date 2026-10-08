@@ -155,7 +155,7 @@ ul.plain li{margin:2px 0}
 </head><body>
 <div id="root"></div>
 
-<script type="application/json" id="state">{"schema":1,"team":"商详与下单","owner":"芊","anchor":{"version":"6.3","start":"2026-09-07"},"cadenceWeeks":2,"minorMax":9,"holidayRule":"shift","holidays":[{"from":"2026-01-01","to":"2026-01-03","name":"元旦"},{"from":"2026-02-15","to":"2026-02-23","name":"春节"},{"from":"2026-04-04","to":"2026-04-06","name":"清明"},{"from":"2026-05-01","to":"2026-05-05","name":"劳动节"},{"from":"2026-06-19","to":"2026-06-21","name":"端午"},{"from":"2026-09-25","to":"2026-09-27","name":"中秋"},{"from":"2026-10-01","to":"2026-10-07","name":"国庆"}],"makeup":[{"date":"2026-01-04","name":"调休上班"},{"date":"2026-02-14","name":"调休上班"},{"date":"2026-02-28","name":"调休上班"},{"date":"2026-05-09","name":"调休上班"},{"date":"2026-09-20","name":"调休上班"},{"date":"2026-10-10","name":"调休上班"}],"pauses":[],"stages":[{"name":"MRD 阶段","short":"MRD","desc":"收集、评审、筛选需求"},{"name":"PRD 阶段","short":"PRD·设计","desc":"写详细方案、技术终审、设计出稿"},{"name":"开发中","short":"开发","desc":"研发开发，PM 答疑跟进"},{"name":"测试中","short":"测试","desc":"提测、测试、产品自测"},{"name":"发布中","short":"发布","desc":"代码冻结 → 服务端上线 → 灰度"},{"name":"已全量发布","short":"上线","desc":"本版本已上线"}],"template":[{"key":"mrd_start","w":0,"d":0,"label":"MRD-开始组内提报","stage":"MRD 阶段","desc":"版本需求收集开始：组内各自把想做的需求写成 MRD 提报。先想清楚背景、目标和预期收益。"},{"key":"mrd_outer","w":0,"d":2,"label":"MRD-组内没评完+组外","stage":"MRD 阶段","desc":"组内没评完的 MRD 继续评；同时和组外（有依赖的兄弟团队）对齐。"},{"key":"mrd_scope","w":0,"d":4,"label":"MRD-确定需求范围-录入平台","stage":"MRD 阶段","desc":"定下这一版要做哪些 MRD，并录入需求平台。没录入的一般赶不上这一版。"},{"key":"mrd_tech","w":1,"d":0,"label":"MRD-技术预审","stage":"MRD 阶段","desc":"研发初步看 MRD，评估能不能做、大概多少工作量、有什么风险。"},{"key":"mrd_final","w":1,"d":1,"label":"MRD-确定哪些流入终审","stage":"MRD 阶段","desc":"根据预审结果筛选，决定哪些需求进入 PRD 阶段、参加后面的技术终审。"},{"key":"ds_inner","w":1,"d":2,"label":"设计稿组内评审","stage":"MRD 阶段","desc":"设计稿先在组内过一遍，对齐交互和视觉方向。"},{"key":"prd_design","w":2,"d":0,"label":"PRD-设计提需截止","stage":"PRD 阶段","desc":"需要设计师出稿的需求，最晚今天提给设计。"},{"key":"prd_rdc","w":2,"d":1,"label":"PRD-下班前RDC截止绑定","stage":"PRD 阶段","desc":"今天下班前要在 RDC 上把需求绑定到这个版本，过了截止可能赶不上。"},{"key":"prd_review","w":2,"d":2,"label":"PRD-组内评审","stage":"PRD 阶段","desc":"详细方案（PRD）先在组内评，查漏补缺。"},{"key":"prd_tech","w":2,"d":3,"label":"PRD-技术终审","stage":"PRD 阶段","desc":"和研发、测试正式评 PRD，确认方案可行并排期。"},{"key":"prd_scope","w":2,"d":4,"label":"PRD-确定终审需求范围","stage":"PRD 阶段","desc":"最终锁定这一版做哪些需求，之后原则上不再加。"},{"key":"prd_track","w":3,"d":0,"label":"PRD-埋点评审","stage":"PRD 阶段","desc":"和数据、研发确认埋点方案，保证上线后能看效果数据。"},{"key":"ds_dev","w":3,"d":3,"label":"设计稿设计&开发评审","stage":"PRD 阶段","desc":"设计稿和设计师、研发一起过，确认能实现、细节没有歧义。"},{"key":"dev","w":3,"d":4,"label":"PRD-开发","stage":"开发中","desc":"研发开始写代码。PM 随时答疑，需求原则上不再改。"},{"key":"qa_server","w":4,"d":2,"label":"测试-服务端提测","stage":"测试中","desc":"服务端开发完成，交给测试同学测。"},{"key":"qa_client","w":4,"d":3,"label":"测试-客户端提测","stage":"测试中","desc":"App 端开发完成，交给测试同学测。"},{"key":"qa_self","w":5,"d":0,"label":"测试-产品自测","stage":"测试中","desc":"PM 自己在测试环境把功能走一遍，对照 PRD 验收。"},{"key":"rel_freeze","w":5,"d":1,"label":"发布-服务端代码停止修改","stage":"发布中","desc":"服务端代码冻结，之后只修严重 bug。"},{"key":"rel_server","w":5,"d":3,"label":"发布-服务端","stage":"发布中","desc":"服务端上线到线上环境。"},{"key":"rel_gray","w":5,"d":4,"label":"发布-客户端灰度包","stage":"发布中","desc":"App 新版本先推给一小部分用户，观察数据和问题。"},{"key":"rel_prod","w":6,"d":2,"label":"发布-客户端正式包","stage":"已全量发布","desc":"App 新版本全量发布（应用商店上线）。"}],"overrides":{},"extras":[],"reqs":{},"flags":{"6.0":"原表没有，按规律推算","6.1":"原表没有，按规律推算","6.2":"原表没有，按规律推算","6.3|ds_inner":"原表空着，按规律补","6.4|prd_scope":"原表空着，按规律补","6.4|dev":"原表空着，按规律补","6.4|qa_client":"原表空着，按规律补","6.5|prd_review":"原表空着，按规律补","6.5|prd_tech":"原表空着，按规律补","6.5|prd_scope":"原表空着，按规律补","6.6|mrd_scope":"原表空着，按规律补"},"log":[{"id":"v3","at":"2026-09-17","items":["新增离线网页：不用 Claude、不用翻墙也能打开，改完可以下载新版网页发给大家"]},{"id":"v2","at":"2026-09-17","items":["改成可复用、可多人编辑的版本：版本号、周期、假期、暂停周、流程模板都能在页面里改"]},{"id":"init","at":"2026-09-17","items":["根据 mt 的迭代表初始化：6.3 起始周 = 9/7，双周一版","设计稿组内评审放在各版本第二周周三","中秋、国庆里的节点顺延到假期后第一个工作日"]}],"updatedAt":"2026-09-17T08:00:00.000Z"}</script>
+<script type="application/json" id="state">{"schema":1,"team":"商详与下单","owner":"芊","anchor":{"version":"6.3","start":"2026-09-07"},"cadenceWeeks":2,"minorMax":9,"holidayRule":"workday","holidays":[{"from":"2026-01-01","to":"2026-01-03","name":"元旦"},{"from":"2026-02-15","to":"2026-02-23","name":"春节"},{"from":"2026-04-04","to":"2026-04-06","name":"清明"},{"from":"2026-05-01","to":"2026-05-05","name":"劳动节"},{"from":"2026-06-19","to":"2026-06-21","name":"端午"},{"from":"2026-09-25","to":"2026-09-27","name":"中秋"},{"from":"2026-10-01","to":"2026-10-07","name":"国庆"}],"makeup":[{"date":"2026-01-04","name":"调休上班"},{"date":"2026-02-14","name":"调休上班"},{"date":"2026-02-28","name":"调休上班"},{"date":"2026-05-09","name":"调休上班"},{"date":"2026-09-20","name":"调休上班"},{"date":"2026-10-10","name":"调休上班"}],"pauses":[],"stages":[{"name":"MRD 阶段","short":"MRD","desc":"收集、评审、筛选需求"},{"name":"PRD 阶段","short":"PRD·设计","desc":"写详细方案、技术终审、设计出稿"},{"name":"开发中","short":"开发","desc":"研发开发，PM 答疑跟进"},{"name":"测试中","short":"测试","desc":"提测、测试、产品自测"},{"name":"发布中","short":"发布","desc":"代码冻结 → 服务端上线 → 灰度"},{"name":"已全量发布","short":"上线","desc":"本版本已上线"}],"template":[{"key":"mrd_start","w":0,"d":0,"label":"MRD-开始组内提报","stage":"MRD 阶段","desc":"版本需求收集开始：组内各自把想做的需求写成 MRD 提报。先想清楚背景、目标和预期收益。"},{"key":"mrd_outer","w":0,"d":2,"label":"MRD-组内没评完+组外","stage":"MRD 阶段","desc":"组内没评完的 MRD 继续评；同时和组外（有依赖的兄弟团队）对齐。"},{"key":"mrd_scope","w":0,"d":4,"label":"MRD-确定需求范围-录入平台","stage":"MRD 阶段","desc":"定下这一版要做哪些 MRD，并录入需求平台。没录入的一般赶不上这一版。"},{"key":"mrd_tech","w":1,"d":0,"label":"MRD-技术预审","stage":"MRD 阶段","desc":"研发初步看 MRD，评估能不能做、大概多少工作量、有什么风险。"},{"key":"mrd_final","w":1,"d":1,"label":"MRD-确定哪些流入终审","stage":"MRD 阶段","desc":"根据预审结果筛选，决定哪些需求进入 PRD 阶段、参加后面的技术终审。"},{"key":"ds_inner","w":1,"d":2,"label":"设计稿组内评审","stage":"MRD 阶段","desc":"设计稿先在组内过一遍，对齐交互和视觉方向。"},{"key":"prd_design","w":2,"d":0,"label":"PRD-设计提需截止","stage":"PRD 阶段","desc":"需要设计师出稿的需求，最晚今天提给设计。"},{"key":"prd_rdc","w":2,"d":1,"label":"PRD-下班前RDC截止绑定","stage":"PRD 阶段","desc":"今天下班前要在 RDC 上把需求绑定到这个版本，过了截止可能赶不上。"},{"key":"prd_review","w":2,"d":2,"label":"PRD-组内评审","stage":"PRD 阶段","desc":"详细方案（PRD）先在组内评，查漏补缺。"},{"key":"prd_tech","w":2,"d":3,"label":"PRD-技术终审","stage":"PRD 阶段","desc":"和研发、测试正式评 PRD，确认方案可行并排期。"},{"key":"prd_scope","w":2,"d":4,"label":"PRD-确定终审需求范围","stage":"PRD 阶段","desc":"最终锁定这一版做哪些需求，之后原则上不再加。"},{"key":"prd_track","w":3,"d":0,"label":"PRD-埋点评审","stage":"PRD 阶段","desc":"和数据、研发确认埋点方案，保证上线后能看效果数据。"},{"key":"ds_dev","w":3,"d":3,"label":"设计稿设计&开发评审","stage":"PRD 阶段","desc":"设计稿和设计师、研发一起过，确认能实现、细节没有歧义。"},{"key":"dev","w":3,"d":4,"label":"PRD-开发","stage":"开发中","desc":"研发开始写代码。PM 随时答疑，需求原则上不再改。"},{"key":"qa_server","w":4,"d":2,"label":"测试-服务端提测","stage":"测试中","desc":"服务端开发完成，交给测试同学测。"},{"key":"qa_client","w":4,"d":3,"label":"测试-客户端提测","stage":"测试中","desc":"App 端开发完成，交给测试同学测。"},{"key":"qa_self","w":5,"d":0,"label":"测试-产品自测","stage":"测试中","desc":"PM 自己在测试环境把功能走一遍，对照 PRD 验收。"},{"key":"rel_freeze","w":5,"d":1,"label":"发布-服务端代码停止修改","stage":"发布中","desc":"服务端代码冻结，之后只修严重 bug。"},{"key":"rel_server","w":5,"d":3,"label":"发布-服务端","stage":"发布中","desc":"服务端上线到线上环境。"},{"key":"rel_gray","w":5,"d":4,"label":"发布-客户端灰度包","stage":"发布中","desc":"App 新版本先推给一小部分用户，观察数据和问题。"},{"key":"rel_prod","w":6,"d":2,"label":"发布-客户端正式包","stage":"已全量发布","desc":"App 新版本全量发布（应用商店上线）。"}],"overrides":{},"extras":[],"reqs":{},"flags":{"6.0":"原表没有，按规律推算","6.1":"原表没有，按规律推算","6.2":"原表没有，按规律推算","6.3|ds_inner":"原表空着，按规律补","6.4|prd_scope":"原表空着，按规律补","6.4|dev":"原表空着，按规律补","6.4|qa_client":"原表空着，按规律补","6.5|prd_review":"原表空着，按规律补","6.5|prd_tech":"原表空着，按规律补","6.5|prd_scope":"原表空着，按规律补","6.6|mrd_scope":"原表空着，按规律补"},"log":[{"id":"v4","at":"2026-10-08","items":["假期改成整体顺延：长假当天及之后的节点整体后移一周，星期几不变，不再全挤在节后第一天（例：6.2 服务端发布 10/8、灰度包 10/9、正式包 10/14）"]},{"id":"v3","at":"2026-09-17","items":["新增离线网页：不用 Claude、不用翻墙也能打开，改完可以下载新版网页发给大家"]},{"id":"v2","at":"2026-09-17","items":["改成可复用、可多人编辑的版本：版本号、周期、假期、暂停周、流程模板都能在页面里改"]},{"id":"init","at":"2026-09-17","items":["根据 mt 的迭代表初始化：6.3 起始周 = 9/7，双周一版","设计稿组内评审放在各版本第二周周三","中秋、国庆里的节点顺延到假期后第一个工作日"]}],"updatedAt":"2026-09-17T08:00:00.000Z"}</script>
 
 <script id="app">
 (function(){
@@ -228,16 +228,31 @@ try { var ss = sessionStorage.getItem('vc-sel'); if (isDate(ss)) sel = ss; } cat
 var openSecs = {};
 
 /* ---------- 日历模型 ---------- */
-var HOL = {}, MK = {}, verCache = {};
+var HOL = {}, MK = {}, verCache = {}, HOLBLOCKS = [];
 function rebuild(){
-  HOL = {}; MK = {}; verCache = {};
+  HOL = {}; MK = {}; verCache = {}; HOLBLOCKS = [];
   (S.holidays||[]).forEach(function(h){
     if (!isDate(h.from) || !isDate(h.to)) return;
     for (var d = h.from, i = 0; d <= h.to && i < 60; d = addDays(d,1), i++) HOL[d] = h.name || '假期';
   });
   (S.makeup||[]).forEach(function(x){ if (isDate(x.date)) MK[x.date] = x.name || '调休上班'; });
+  (S.holidays||[]).forEach(function(h){
+    if (!isDate(h.from) || !isDate(h.to)) return;
+    var lost = 0;
+    for (var d = h.from, i = 0; d <= h.to && i < 60; d = addDays(d,1), i++) if (dow(d) < 5) lost++;
+    HOLBLOCKS.push({from:h.from, to:h.to, name:h.name || '假期', lost:lost, shift: lost >= 3 ? Math.ceil(lost/5)*7 : 0});
+  });
+  HOLBLOCKS.sort(function(a,b){ return a.from < b.from ? -1 : 1; });
 }
 function isWork(s){ return MK[s] ? true : (!HOL[s] && dow(s) < 5); }
+// 长假整体顺延：占掉 3 个及以上工作日的假期，假期当天及之后的所有节点后移整周（每 5 个工作日算 1 周）；
+// 只占 1–2 个工作日的小假期不整体后移，只把落在假期当天的节点挪到下一个工作日。
+function holShift(d){           // 只算“参照版本起始周”之后的长假：之前的假期已经体现在参照日期里了
+  var add = 0, A = S.anchor.start;
+  HOLBLOCKS.forEach(function(b){ if (b.from >= A && b.from <= d) add += b.shift; });
+  return add;
+}
+function mapWorkday(base){ return nextWork(addDays(base, holShift(base))); }
 function nextWork(s){ var t = s, i = 0; while (!isWork(t) && i++ < 60) t = addDays(t,1); return t; }
 function pauseShift(s){
   var add = 0;
@@ -275,16 +290,21 @@ function version(n){
   if (!id){ verCache[n] = null; return null; }
   var base0 = addDays(S.anchor.start, n*S.cadenceWeeks*7);
   var start = pauseShift(base0);
+  if (S.holidayRule === 'workday') start = mapWorkday(start);
   var evs = (S.template||[]).map(function(t,i){
     var base = pauseShift(addDays(base0, (Number(t.w)||0)*7 + (Number(t.d)||0)));
     var date = base, note = '';
-    if (S.holidayRule === 'shift'){
+    if (S.holidayRule === 'workday'){
+      var sh = holShift(base);
+      date = mapWorkday(base);
+      if (date !== base) note = '原定 '+md(base)+'，'+(sh ? '长假整体顺延 '+(sh/7)+' 周' : (HOL[base]||'非工作日')+'顺延');
+    } else if (S.holidayRule === 'shift'){
       date = nextWork(base);
       if (date !== base) note = '原定 '+md(base)+'，'+(HOL[base]||'非工作日')+'顺延';
     } else if (!isWork(base)) note = (HOL[base]||'非工作日')+'，待确认';
     var k = id+'|'+t.key, ov = (S.overrides||{})[k];
     if (ov && isDate(ov.date)){ date = ov.date; note = (ov.note ? ov.note+'，' : '已改期，') + '原定 '+md(base); }
-    return {v:id, key:t.key, order:i, label:t.label, stage:t.stage, desc:t.desc||'', base:base, date:date, note:note,
+    return {v:id, key:t.key, order:i, tw:(Number(t.w)||0), label:t.label, stage:t.stage, desc:t.desc||'', base:base, date:date, note:note,
             moved: date !== base, changed: !!(ov && isDate(ov.date)), flag: (S.flags||{})[k] || (S.flags||{})[id] || ''};
   });
   (S.extras||[]).forEach(function(e,i){
@@ -311,6 +331,11 @@ function versionsIn(a,b){
     if (V && V.first <= b && V.end >= a) out.push(V);
   }
   return out;
+}
+function weekAt(V,d){
+  var w = null;
+  V.evs.forEach(function(e){ if (e.date <= d && e.tw != null) w = e.tw; });
+  return (w == null ? 0 : w) + 1;
 }
 function stageAt(V,d){
   var s = null;
@@ -379,7 +404,7 @@ function dayHTML(){
   if (MK[sel]) tags += '<span class="tag mk">'+esc(MK[sel])+'</span>';
   var active = versionsIn(sel, sel);
   var cards = active.map(function(V){
-    var wk = Math.floor((diff(V.start, sel) - 7*pauseWeeksBetween(V.start, sel))/7) + 1;
+    var wk = weekAt(V, sel);
     var st = stageAt(V, sel), si = stageInfo(st);
     var todays = V.evs.filter(function(e){ return e.date === sel; });
     var nxt = V.evs.find(function(e){ return e.date > sel; });
@@ -515,7 +540,9 @@ function notesHTML(A, B){
     if (e.flag && e.flag !== (S.flags||{})[V.id]) flagged.push(e);
   }); });
   var vflags = vs.filter(function(V){ return (S.flags||{})[V.id]; });
-  var rule = S.holidayRule === 'shift' ? '落在假期或周末的节点，顺延到下一个工作日。' : '落在假期的节点不移动，只标出“待确认”。';
+  var rule = S.holidayRule === 'workday' ? '长假整体顺延：占掉 3 个及以上工作日的假期（国庆、春节、劳动节），假期当天及之后的所有节点整体后移整周，星期几和相互间隔都不变；只占 1–2 天的小假期（中秋、清明、端午）不整体后移，只把当天的节点挪到下一个工作日。'
+    : S.holidayRule === 'shift' ? '落在假期或周末的节点，都挪到假期后的第一个工作日。'
+    : '落在假期的节点不移动，只标出“待确认”。';
   var movedRows = moved.map(function(e){
     return '<tr><td style="color:'+colorOf(e.v)+';font-weight:700">'+esc(e.v)+'</td><td>'+esc(e.label)+'</td><td class="mono">'+md(e.base)+'</td><td class="mono">'+md(e.date)+'</td><td>'+(e.changed ? '手动改期' : '假期顺延')+'</td></tr>';
   }).join('');
@@ -560,10 +587,10 @@ function editHTML(){
       [['9','到 .9 进位（6.9 → 7.0）'],['0','不进位（6.9 → 6.10）']].map(function(o){ return '<option value="'+o[0]+'"'+(String(S.minorMax)===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+
       (['9','0'].indexOf(String(S.minorMax)) < 0 ? '<option value="'+esc(S.minorMax)+'" selected>到 .'+esc(S.minorMax)+' 进位</option>' : '')+
     '</select></label>'+
-    '<label>假期里的节点<select id="f-hr"><option value="shift"'+(S.holidayRule==='shift'?' selected':'')+'>顺延到下一个工作日</option><option value="mark"'+(S.holidayRule==='mark'?' selected':'')+'>不动，只标“待确认”</option></select></label>'+
+    '<label>假期里的节点<select id="f-hr"><option value="workday"'+(S.holidayRule==='workday'?' selected':'')+'>长假整体顺延（推荐）</option><option value="shift"'+(S.holidayRule==='shift'?' selected':'')+'>都挪到节后第一个工作日</option><option value="mark"'+(S.holidayRule==='mark'?' selected':'')+'>不动，只标“待确认”</option></select></label>'+
     '<label>页面主人<input id="f-owner" value="'+esc(S.owner||'')+'" size="6"></label>'+
     '<button type="button" data-act="basic">应用</button></div>'+
-    '<p class="hint">换算规则：以“参照版本”的起始周为基准，往前往后每隔 N 周一个版本。进入新的大版本时，只要把参照版本改成新版本号和它的起始周即可。</p>';
+    '<p class="hint">换算规则：以“参照版本”的起始周为基准，往前往后每隔 N 周一个版本；只有参照日期之后的长假才会往后顺延（之前的已经体现在这个日期里了）。隔一段时间把参照版本换成当前版本，就相当于和实际重新对齐。进入新的大版本时，只要把参照版本改成新版本号和它的起始周即可。</p>';
 
   var ovs = Object.keys(S.overrides||{}).sort().map(function(k){
     var p = k.split('|'), t = templateByKey(p[1]), o = S.overrides[k];
@@ -865,7 +892,7 @@ root.addEventListener('click', function(ev){
       if (av !== S.anchor.version || as !== S.anchor.start) pend.push([['anchor'], {version:av, start:as}, '参照版本改为 '+av+'（起始周 '+md(as)+'）']);
       if (cad !== Number(S.cadenceWeeks)) pend.push([['cadenceWeeks'], cad, '改为每 '+cad+' 周一版']);
       if (mm !== Number(S.minorMax)) pend.push([['minorMax'], mm, mm > 0 ? '小版本号到 .'+mm+' 进位' : '小版本号不进位']);
-      if (hr !== S.holidayRule) pend.push([['holidayRule'], hr, hr === 'shift' ? '假期节点改为顺延' : '假期节点改为不动、只标记']);
+      if (hr !== S.holidayRule) pend.push([['holidayRule'], hr, hr === 'workday' ? '假期改为长假整体顺延' : hr === 'shift' ? '假期节点改为挪到节后第一个工作日' : '假期节点改为不动、只标记']);
       if (ow !== (S.owner||'')) pend.push([['owner'], ow, '页面主人改为 '+ow]);
       if (!pend.length) { say('基本设置没有变化。'); break; }
       pend.forEach(function(p){ var op = {path:p[0], v:p[1], text:p[2]}; ops.push(op); applyOp(S, op); });
